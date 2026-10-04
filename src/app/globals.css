@@ -71,6 +71,7 @@ a {
   text-underline-offset: 0.18em;
 }
 
+@layer components {
 /* ───────────────────────── Masthead ───────────────────────── */
 
 .masthead {
@@ -686,4 +687,109 @@ a {
 .inside a:hover .inside-headline {
   text-decoration: underline;
   text-decoration-thickness: 1px;
+}
+
+/* ───────────────────────── Setup cards ───────────────────────── */
+
+.flip {
+  perspective: 1400px;
+}
+.flip-inner {
+  display: grid;
+  transform-style: preserve-3d;
+  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.flip[data-flipped="true"] .flip-inner {
+  transform: rotateY(180deg);
+}
+.flip-face {
+  grid-area: 1 / 1;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.flip-back {
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.stamp {
+  align-self: center;
+  margin-block: 0.6rem 0.2rem;
+  font-family: var(--font-playfair), serif;
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 3px double var(--accent);
+  padding: 0.15rem 0.9rem;
+  rotate: -4deg;
+  opacity: 0.88;
+}
+.logo-ink {
+  filter: grayscale(1) contrast(1.15) brightness(0.85);
+  mix-blend-mode: multiply;
+}
+@media (prefers-reduced-motion: reduce) {
+  .flip-inner {
+    transition: none;
+  }
+}
+
+/* ───────────────────────── Press room ───────────────────────── */
+
+.press-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgb(242 234 216 / 0.82);
+  backdrop-filter: blur(3px) sepia(0.2);
+  animation: rise 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.press-card {
+  width: min(640px, 100%);
+  background-color: var(--paper);
+  background-image: url("/newsprint.webp?v=3");
+  background-blend-mode: multiply;
+  border: 1px solid var(--rule);
+  outline: 1px solid var(--rule);
+  outline-offset: 4px;
+  padding: 1.4rem 1.5rem 1.5rem;
+  box-shadow: 0 18px 50px -12px rgb(28 25 21 / 0.35);
+}
+.wire {
+  font-size: 0.98rem;
+  line-height: 1.4;
+  min-height: 9rem;
+}
+.wire li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding-block: 0.28rem;
+  border-bottom: 1px dotted var(--rule-faint);
+}
+.wire li:first-child {
+  font-family: var(--font-playfair), serif;
+  font-style: italic;
+}
+.wire li[data-tone="muted"] {
+  color: var(--ink-faint);
+}
+.wire li[data-tone="warn"] {
+  color: var(--accent);
+}
+.wire li[data-tone="ok"] > :last-child {
+  font-weight: 650;
+}
+.wire-leader {
+  flex: 1;
+  border-bottom: 1px dotted var(--ink-faint);
+  translate: 0 -0.25em;
+  min-width: 1rem;
+}
 }
