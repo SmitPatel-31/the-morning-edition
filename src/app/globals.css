@@ -1,26 +1,689 @@
 @import "tailwindcss";
 
+/*
+ * The Morning Edition: one light theme on purpose. It's a printed object read
+ * in morning light, and the paper is part of the content.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #f2ead8;
+  --paper-deep: #e9dfc8;
+  --ink: #1c1915;
+  --ink-soft: #4b4439;
+  --ink-faint: #6f6656;
+  --rule: #2b2620;
+  --rule-faint: #b9ad94;
+  --accent: #8a1f17;
+  --focus: #8a1f17;
+  --measure: 68ch;
+  color-scheme: light;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-paper: var(--paper);
+  --color-paper-deep: var(--paper-deep);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+  --color-rule: var(--rule);
+  --color-rule-faint: var(--rule-faint);
+  --color-accent: var(--accent);
+  --font-blackletter: var(--font-unifraktur);
+  --font-display: var(--font-playfair);
+  --font-serif: var(--font-source-serif);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--paper);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--paper);
+  /* Newsprint grain: a generated, seamless raster tile blended into the paper. */
+  background-image:
+    radial-gradient(ellipse at 50% 0%, rgb(255 250 236 / 0.55), transparent 70%),
+    url("/newsprint.webp?v=3");
+  background-blend-mode: normal, multiply;
+  background-size: 100% 900px, 384px 384px;
+  background-repeat: no-repeat, repeat;
+  color: var(--ink);
+  font-family: var(--font-source-serif), Georgia, serif;
+  font-optical-sizing: auto;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+html {
+  scrollbar-color: var(--ink-faint) var(--paper-deep);
+}
+
+a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+/* ───────────────────────── Masthead ───────────────────────── */
+
+.masthead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 1.5rem;
+  padding-block: 1.25rem 0.75rem;
+}
+
+.ear {
+  border: 1px solid var(--rule);
+  padding: 0.6rem 0.75rem;
+  max-width: 15rem;
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+.ear-right {
+  justify-self: end;
+  text-align: right;
+}
+.ear-title {
+  font-variant: all-small-caps;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--rule-faint);
+  padding-bottom: 0.25rem;
+  margin-bottom: 0.35rem;
+}
+
+.nameplate {
+  font-family: var(--font-unifraktur), serif;
+  font-weight: 400;
+  font-size: clamp(1.6rem, 8.2vw, 6rem);
+  line-height: 1;
+  letter-spacing: -0.005em;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+.folio {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border-block: 1px solid var(--rule);
+  box-shadow: 0 -4px 0 -1px var(--paper), 0 -5px 0 -1px var(--rule);
+  margin-top: 0.4rem;
+  padding: 0.35rem 0.1rem;
+  font-variant: all-small-caps;
+  letter-spacing: 0.08em;
+  font-size: 0.95rem;
+  font-variant-numeric: oldstyle-nums;
+}
+.folio > :nth-child(2) {
+  text-align: center;
+}
+.folio > :last-child {
+  text-align: right;
+}
+
+.busy-bars {
+  display: inline-flex;
+  gap: 3px;
+  vertical-align: middle;
+  margin-left: 0.35rem;
+}
+.busy-bars span {
+  width: 6px;
+  height: 10px;
+  border: 1px solid var(--ink);
+}
+.busy-bars span[data-on="true"] {
+  background: var(--ink);
+}
+
+/* ───────────────────────── Front page grid ───────────────────────── */
+
+.front {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  border-bottom: 3px double var(--rule);
+}
+
+.lead {
+  grid-column: span 8;
+  padding: 1.25rem 1.5rem 1.5rem 0;
+  border-right: 1px solid var(--rule);
+}
+.lead-side {
+  grid-column: span 4;
+  padding: 1.25rem 0 1.5rem 1.5rem;
+}
+
+.lead-headline {
+  font-family: var(--font-playfair), serif;
+  font-weight: 800;
+  font-size: clamp(2.1rem, 4.1vw, 3.75rem);
+  line-height: 1.02;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.lead-deck {
+  font-family: var(--font-playfair), serif;
+  font-style: italic;
+  font-size: clamp(1.1rem, 1.6vw, 1.4rem);
+  line-height: 1.3;
+  color: var(--ink-soft);
+  margin-top: 0.75rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--rule-faint);
+  text-wrap: pretty;
+}
+.lead-body {
+  margin-top: 1rem;
+  columns: 2;
+  column-gap: 1.75rem;
+  column-rule: 1px solid var(--rule-faint);
+}
+
+.copy {
+  font-size: 1.0625rem;
+  line-height: 1.52;
+  text-wrap: pretty;
+  hyphens: auto;
+}
+.copy p + p {
+  margin-top: 0.7em;
+  text-indent: 1.25em;
+}
+@media print, (min-width: 900px) {
+  .copy {
+    text-align: justify;
+  }
+}
+
+.dateline {
+  font-variant: all-small-caps;
+  letter-spacing: 0.06em;
+  font-weight: 650;
+}
+
+.drop-cap > p:first-child::first-letter {
+  float: left;
+  font-family: var(--font-playfair), serif;
+  font-weight: 800;
+  font-size: 4.35em;
+  line-height: 0.78;
+  padding: 0.08em 0.09em 0 0;
+  color: var(--ink);
+}
+@supports (initial-letter: 3) or (-webkit-initial-letter: 3) {
+  .drop-cap > p:first-child::first-letter {
+    float: none;
+    font-size: inherit;
+    line-height: inherit;
+    padding: 0 0.12em 0 0;
+    -webkit-initial-letter: 3;
+    initial-letter: 3;
+  }
+}
+
+.below {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.15fr);
+  grid-auto-flow: row dense;
+  column-gap: 2.5rem;
+}
+/* Column rules sit in the middle of each gutter and break at gutters, as in print. */
+.story {
+  position: relative;
+  padding: 1.25rem 0 1.5rem;
+  border-bottom: 1px solid var(--rule-faint);
+}
+.story::after {
+  content: "";
+  position: absolute;
+  top: 1.25rem;
+  bottom: 1.25rem;
+  right: -1.25rem;
+  border-right: 1px solid var(--rule-faint);
+}
+.story.featured {
+  grid-column: span 2;
+}
+.story.featured .story-copy {
+  columns: 2;
+  column-gap: 1.5rem;
+  column-rule: 1px solid var(--rule-faint);
+}
+.story-headline {
+  font-family: var(--font-playfair), serif;
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  font-size: 1.3rem;
+}
+.story.featured .story-headline {
+  font-size: clamp(1.6rem, 2.4vw, 2.15rem);
+  font-weight: 800;
+}
+.story-rule {
+  width: 2.5rem;
+  border-top: 1px solid var(--rule);
+  margin: 0.6rem 0 0.7rem;
+}
+
+.sidebar {
+  grid-column: 4;
+  grid-row: 1 / span 6;
+  padding: 1.25rem 0 1.5rem;
+}
+
+/* Boxed features: schedule and pull requests */
+.boxed {
+  border: 1px solid var(--rule);
+  outline: 1px solid var(--rule);
+  outline-offset: 3px;
+  padding: 0.9rem 1rem 1rem;
+  margin: 4px;
+  background: rgb(255 252 244 / 0.35);
+}
+.box-title {
+  font-family: var(--font-playfair), serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+  line-height: 1.1;
+  text-align: center;
+  padding-bottom: 0.5rem;
+  border-bottom: 3px double var(--rule);
+  margin-bottom: 0.25rem;
+}
+.box-row {
+  padding-block: 0.6rem;
+  border-bottom: 1px dotted var(--rule-faint);
+}
+.box-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.num {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.sources {
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+.sources a {
+  color: var(--ink);
+}
+.sources a:hover {
+  color: var(--accent);
+}
+.why {
+  margin-top: 0.3rem;
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+}
+
+.key-mark {
+  display: inline-block;
+  width: 0.5em;
+  height: 0.5em;
+  background: var(--accent);
+  margin-right: 0.4em;
+  vertical-align: 0.12em;
+}
+
+/* ───────────────────────── Responsive ───────────────────────── */
+
+/* The forecast lives in the masthead ear; phones hide the ears and show it here. */
+.mobile-weather {
+  display: none;
+}
+
+@media screen and (max-width: 1080px) {
+  .masthead {
+    grid-template-columns: 1fr;
+  }
+  .ear,
+  .inside {
+    display: none;
+  }
+  .mobile-weather {
+    display: block;
+  }
+  .below {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .sidebar {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+  .story.featured {
+    grid-column: 1 / -1;
+  }
+}
+
+@media screen and (max-width: 760px) {
+  .masthead {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  .ear {
+    display: none;
+  }
+  .folio {
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    text-align: center;
+  }
+  .folio > * {
+    text-align: center !important;
+  }
+  .front {
+    display: block;
+  }
+  .lead,
+  .lead-side {
+    padding: 1rem 0;
+    border-right: 0;
+  }
+  .lead-side {
+    border-top: 1px solid var(--rule);
+  }
+  .lead-body,
+  .story.featured .story-copy {
+    columns: 1;
+  }
+  .below {
+    display: block;
+  }
+  .story {
+    padding: 1.1rem 0;
+  }
+  .story::after {
+    display: none;
+  }
+  .sidebar {
+    padding: 1rem 0;
+  }
+  .mobile-weather {
+    display: block;
+  }
+}
+
+/* ───────────────────────── Printing press ───────────────────────── */
+
+@keyframes roll {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes feed {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes ink-in {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+.press-roller {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: roll 1.1s linear infinite;
+}
+.press-roller.reverse {
+  animation-direction: reverse;
+}
+.press-sheet {
+  animation: feed 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+.press-line {
+  animation: ink-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.wire-line {
+  animation: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Fresh edition: the page "drops" onto the desk once after printing. */
+@keyframes land {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.995);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+.fresh {
+  animation: land 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .press-roller,
+  .press-sheet,
+  .press-line,
+  .wire-line,
+  .fresh {
+    animation: none;
+  }
+}
+
+/* ───────────────────────── Print ───────────────────────── */
+
+@media print {
+  @page {
+    size: letter;
+    margin: 0.45in;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #000;
+    font-size: 9.5pt;
+  }
+  .no-print,
+  .inside {
+    display: none !important;
+  }
+  .paper-shell {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+  .nameplate {
+    font-size: 44pt;
+  }
+  .ear {
+    display: block !important;
+    font-size: 7.5pt;
+  }
+  .lead-headline {
+    font-size: 26pt;
+  }
+  .story-headline {
+    font-size: 12pt;
+  }
+  .story.featured .story-headline {
+    font-size: 16pt;
+  }
+  .copy {
+    font-size: 9.5pt;
+    line-height: 1.35;
+  }
+  .boxed {
+    background: none;
+  }
+  .story,
+  .boxed,
+  .box-row {
+    break-inside: avoid;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .fresh {
+    animation: none;
+  }
+}
+
+/* ───────────────────────── Controls ───────────────────────── */
+
+.index-link {
+  font-variant: all-small-caps;
+  letter-spacing: 0.08em;
+  font-size: 1.05rem;
+  text-decoration: none;
+  color: var(--ink-soft);
+  transition: color 160ms ease-out;
+}
+.index-link:hover,
+.index-link[aria-current="page"] {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+/* Text-weight action, for secondary commands in the index strip. */
+.press-link {
+  font-variant: all-small-caps;
+  letter-spacing: 0.08em;
+  font-size: 1.05rem;
+  color: var(--ink);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.press-link:hover {
+  color: var(--accent);
+}
+
+/* The one primary action: an ink-black slug of type, like a stamped notice. */
+.press-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-playfair), serif;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+  padding: 0.55rem 1.05rem 0.6rem;
+  border: 1px solid var(--ink);
+  box-shadow: 0 1px 0 var(--paper), 0 2px 6px rgb(28 25 21 / 0.18);
+  transition: background-color 160ms ease-out, transform 160ms ease-out;
+  cursor: pointer;
+}
+.press-button:hover {
+  background: #000;
+}
+.press-button:active {
+  transform: translateY(1px);
+}
+.press-button:disabled {
+  opacity: 0.55;
+  cursor: progress;
+}
+.press-button.secondary {
+  background: transparent;
+  color: var(--ink);
+}
+.press-button.secondary:hover {
+  background: rgb(28 25 21 / 0.06);
+}
+
+.field {
+  width: 100%;
+  background: rgb(255 252 244 / 0.6);
+  border: 1px solid var(--rule);
+  padding: 0.5rem 0.65rem;
+  font: inherit;
+  color: var(--ink);
+}
+.field::placeholder {
+  color: var(--ink-faint);
+}
+.field:focus-visible {
+  outline-offset: 1px;
+}
+
+/* "Inside" index under the schedule */
+.inside {
+  margin-top: 1.5rem;
+}
+.inside-title {
+  font-variant: all-small-caps;
+  letter-spacing: 0.12em;
+  font-weight: 650;
+  font-size: 1.05rem;
+  text-align: center;
+  border-block: 1px solid var(--rule);
+  padding-block: 0.2rem;
+  margin-bottom: 0.4rem;
+}
+.inside li + li {
+  border-top: 1px dotted var(--rule-faint);
+}
+.inside a {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.5rem;
+  padding-block: 0.45rem;
+  text-decoration: none;
+  color: var(--ink);
+}
+.inside .dateline {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+.inside-leader {
+  align-self: center;
+  border-bottom: 1px dotted var(--ink-faint);
+  translate: 0 0.25em;
+}
+.inside-headline {
+  grid-column: 1 / -1;
+  font-family: var(--font-playfair), serif;
+  font-weight: 600;
+  font-size: 0.98rem;
+  line-height: 1.25;
+}
+.inside a:hover .inside-headline {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
 }
